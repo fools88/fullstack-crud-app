@@ -1,13 +1,14 @@
-// script.js (Kode Full-Stack CRUD Lengkap)
+// script.js (Kode Full-Stack CRUD Lengkap - Final Public URL Fix)
 
-// Variabel untuk melacak mode (Create atau Update)
+// --- GANTI ALAMAT INI DENGAN URL PUBLIK RENDER-MU ---
+const BASE_URL = 'https://fullstack-crud-app-bpsj.onrender.com/api/postingan'; 
+// --- GANTI ALAMAT INI DENGAN URL PUBLIK RENDER-MU ---
+
 let idPostToEdit = null; 
 
-// Dapatkan elemen dari HTML
 const form = document.getElementById('form-postingan');
 const feedback = document.getElementById('feedback');
 const container = document.getElementById('container-postingan');
-
 
 // ------------------------------------------------------------------
 // --- FUNGSI CREATE DAN UPDATE (C & U) ---
@@ -23,13 +24,13 @@ function kirimData() {
     const dataPost = { judul: judul, konten: konten };
 
     // Tentukan URL dan Metode berdasarkan mode (Create atau Update)
-    let url = 'http://127.0.0.1:5000/api/postingan';
+    let url = BASE_URL;
     let method = 'POST';
     let successMessage = 'Postingan berhasil disimpan!';
 
     if (idPostToEdit !== null) { // JIKA DALAM MODE EDIT (UPDATE)
-        url = `http://127.0.0.1:5000/api/postingan/${idPostToEdit}`;
-        method = 'PUT'; // Metode PUT
+        url = `${BASE_URL}/${idPostToEdit}`; // Menggunakan template string untuk ID
+        method = 'PUT'; 
         successMessage = 'Postingan berhasil diubah!';
     }
 
@@ -40,15 +41,14 @@ function kirimData() {
     })
     .then(response => response.json())
     .then(data => {
-        // Tampilkan feedback sukses
         feedback.textContent = `✅ SUKSES: ${successMessage} (ID: ${idPostToEdit || data.id})`;
         feedback.style.color = 'green';
         form.reset(); 
-        idPostToEdit = null; // Reset mode ke Create
-        muatPostingan(); // Refresh data
+        idPostToEdit = null;
+        muatPostingan(); 
     })
     .catch(error => {
-        feedback.textContent = '❌ ERROR: Gagal mengirim data ke server. Cek konsol.';
+        feedback.textContent = '❌ ERROR: Gagal mengirim data. Cek koneksi server Render.';
         feedback.style.color = 'red';
         console.error('Error:', error);
     });
@@ -56,10 +56,10 @@ function kirimData() {
 
 
 // ------------------------------------------------------------------
-// --- FUNGSI READ DAN DELETE (R & D) ---
+// --- FUNGSI READ (R) ---
 // ------------------------------------------------------------------
 function muatPostingan() {
-    fetch('http://127.0.0.1:5000/api/postingan')
+    fetch(BASE_URL) // Menggunakan URL Publik Render
         .then(response => response.json())
         .then(data => {
             container.innerHTML = ''; 
@@ -79,14 +79,17 @@ function muatPostingan() {
         })
         .catch(error => {
             console.error('Error saat memuat postingan:', error);
-            container.innerHTML = `<p style="color:red;">Gagal memuat data dari server. Pastikan server Flask berjalan.</p>`;
+            container.innerHTML = `<p style="color:red;">Gagal memuat data dari server Render.</p>`;
         });
 }
 
+// ------------------------------------------------------------------
+// --- FUNGSI DELETE (D) ---
+// ------------------------------------------------------------------
 function hapusPostingan(id) {
     if (!confirm(`Yakin ingin menghapus Postingan ID ${id}?`)) return;
 
-    fetch(`http://127.0.0.1:5000/api/postingan/${id}`, {
+    fetch(`${BASE_URL}/${id}`, { // Menggunakan URL Publik Render
         method: 'DELETE', 
     })
     .then(response => response.json())
@@ -109,7 +112,7 @@ function isiFormEdit(id) {
     
     // Ambil Judul dan Konten dari elemen yang sudah tampil di halaman
     const judul = postElement.querySelector('h4').textContent.split('(')[0].trim();
-    const konten = postElement.querySelector('p').textContent;
+    const konten = postElement.querySelector('.post-konten').textContent;
 
     // Isi formulir dengan data yang diambil
     document.getElementById('judul').value = judul;
@@ -124,6 +127,5 @@ function isiFormEdit(id) {
     window.scrollTo(0, 0); 
 }
 
-
-// Panggil fungsi ini saat halaman dimuat (untuk menampilkan semua data)
+// Jalankan fungsi ini saat halaman dimuat (untuk menampilkan semua data)
 muatPostingan();

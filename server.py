@@ -13,6 +13,9 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db = SQLAlchemy(app) 
 
+with app.app_context(): # <--- WAJIB: Masuk ke konteks Flask
+    db.create_all()      # <--- PERINTAH UNTUK MEMBUAT TABEL JIKA BELUM ADA
+
 class Postingan(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     judul = db.Column(db.String(100), nullable=False)

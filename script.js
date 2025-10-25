@@ -1,8 +1,7 @@
 // script.js (Kode Full-Stack CRUD Lengkap - Final Public URL Fix)
 
 // --- GANTI ALAMAT INI DENGAN URL PUBLIK RENDER-MU ---
-const BASE_URL = 'https://fullstack-crud-app-bpsj.onrender.com/api/postingan'; 
-// --- GANTI ALAMAT INI DENGAN URL PUBLIK RENDER-MU ---
+const BASE_URL = '/api/postingan';
 
 let idPostToEdit = null; 
 

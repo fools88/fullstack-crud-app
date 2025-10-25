@@ -1,0 +1,10 @@
+def tanya_pengguna(nama):
+    pesan = "Benny : Halo, " + nama +   ". Apa kamu mencintai ku ?"
+    return pesan 
+def jawab_pengguna(nama):
+    pesan = "Dini : Iya, " + nama + ". Aku sangat mencintaimu!"
+    return pesan
+hasil_tanyaan = tanya_pengguna("Dini")
+hasil_jawaban = jawab_pengguna("Benny")
+print(hasil_tanyaan)
+print(hasil_jawaban)    

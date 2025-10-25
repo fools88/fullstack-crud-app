@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy 
 import os
@@ -31,7 +31,7 @@ with app.app_context():
 
 @app.route('/')
 def home():
-    return "Halo, G! Server Python Flask-mu Sudah Berjalan!"
+    return render_template('index.html')
 
 @app.route('/api/status')
 def get_status():

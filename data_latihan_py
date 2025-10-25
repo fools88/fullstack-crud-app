@@ -1,0 +1,28 @@
+daftar_nama_siswa = ["Budi", "Santi", "Tono", "Tora"]
+daftar_nilai = [85, 90, 78, 92]
+print(daftar_nama_siswa[0])
+daftar_nama_siswa.append("Goat")
+print(daftar_nama_siswa)
+data_user = {
+    "nama": "Tora",
+    "usia": 20,
+    "pekerjaan": "Admin",
+    "status_fullstack": False
+}
+print(data_user["nama"])
+print(data_user["usia"])
+data_user["usia"] = 21
+data_user["kota"] = "Pontianak"
+print(data_user)
+
+daftar_buah = ["apel", "pisang", "mangga", "anggur"]
+for buah in daftar_buah:
+    print("Saya suka makan " + buah)
+print("Selesai menghitung buah.")
+
+list_nama_teman = ["Budi", "Santi", "Tono", "Tora"]
+def tampilkan_data_teman(daftar_teman):
+    print("\n--- Daftar Nama Teman dan Favorite Buahnya ---")
+    for nama in daftar_teman:
+        print("Nama : " + nama + " suka makan " + buah  )
+tampilkan_data_teman(list_nama_teman)

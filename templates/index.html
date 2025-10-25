@@ -1,30 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Website G</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    
-    <h1>Selamat Datang, Sayangggggggggggggggg!</h1>
-    <h2>Ini adalah Website Pertama Saya</h2>
+<h1>Live Chat G!</h1>
 
-    <button id="tombol-sapa">Klik Saya!</button>
-    <h2>Buat Postingan Baru</h2>
-<form id="form-postingan">
-    <input type="text" id="judul" placeholder="Judul Postingan" required><br><br>
-    <textarea id="konten" placeholder="Isi Konten" rows="5" required></textarea><br><br>
-    <button type="submit">Kirim ke Python!</button>
-</form>
-
-<h3 id="feedback"></h3>
-
-<h2>Postingan Tersimpan di Database:</h2>
-<div id="container-postingan">
+<div id="container-pesan" style="border: 1px solid black; height: 300px; overflow-y: scroll;">
     </div>
 
+<input type="text" id="input-pesan" placeholder="Ketik pesan di sini...">
+<button id="tombol-kirim">Kirim</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
 <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

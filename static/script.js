@@ -1,130 +1,31 @@
-// script.js (Kode Full-Stack CRUD Lengkap - Final Public URL Fix)
+// static/script.js (Kode Live Chat Client)
 
-// --- GANTI ALAMAT INI DENGAN URL PUBLIK RENDER-MU ---
-const BASE_URL = '/api/postingan';
+// 1. Inisialisasi koneksi Socket.IO ke server Render
+const socket = io('https://fullstack-crud-app-bpsjionrender.com'); // Ganti dengan URL Render-mu!
 
-let idPostToEdit = null; 
+// Dapatkan elemen
+const inputPesan = document.getElementById('input-pesan');
+const tombolKirim = document.getElementById('tombol-kirim');
+const containerPesan = document.getElementById('container-pesan');
 
-const form = document.getElementById('form-postingan');
-const feedback = document.getElementById('feedback');
-const container = document.getElementById('container-postingan');
-
-// ------------------------------------------------------------------
-// --- FUNGSI CREATE DAN UPDATE (C & U) ---
-// ------------------------------------------------------------------
-form.addEventListener('submit', function(e) {
-    e.preventDefault(); 
-    kirimData();
+// 2. Event Listener: Server Berhasil Terhubung
+socket.on('connect', function() {
+    console.log('Terhubung ke server real-time!');
+    containerPesan.innerHTML += '<p>— Anda terhubung —</p>';
 });
 
-function kirimData() {
-    const judul = document.getElementById('judul').value;
-    const konten = document.getElementById('konten').value;
-    const dataPost = { judul: judul, konten: konten };
+// 3. Event Listener: Server Menerima Pesan (Event: 'message_terima')
+socket.on('message_terima', function(msg) {
+    // Tampilkan pesan yang diterima tanpa reload
+    containerPesan.innerHTML += `<p><strong>User:</strong> ${msg.text}</p>`;
+});
 
-    // Tentukan URL dan Metode berdasarkan mode (Create atau Update)
-    let url = BASE_URL;
-    let method = 'POST';
-    let successMessage = 'Postingan berhasil disimpan!';
+// 4. Event Handler: Tombol Kirim Diklik
+tombolKirim.onclick = function() {
+    const text = inputPesan.value;
+    if (text.trim() === '') return;
 
-    if (idPostToEdit !== null) { // JIKA DALAM MODE EDIT (UPDATE)
-        url = `${BASE_URL}/${idPostToEdit}`; // Menggunakan template string untuk ID
-        method = 'PUT'; 
-        successMessage = 'Postingan berhasil diubah!';
-    }
-
-    fetch(url, {
-        method: method, 
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dataPost) 
-    })
-    .then(response => response.json())
-    .then(data => {
-        feedback.textContent = `✅ SUKSES: ${successMessage} (ID: ${idPostToEdit || data.id})`;
-        feedback.style.color = 'green';
-        form.reset(); 
-        idPostToEdit = null;
-        muatPostingan(); 
-    })
-    .catch(error => {
-        feedback.textContent = '❌ ERROR: Gagal mengirim data. Cek koneksi server Render.';
-        feedback.style.color = 'red';
-        console.error('Error:', error);
-    });
-}
-
-
-// ------------------------------------------------------------------
-// --- FUNGSI READ (R) ---
-// ------------------------------------------------------------------
-function muatPostingan() {
-    fetch(BASE_URL) // Menggunakan URL Publik Render
-        .then(response => response.json())
-        .then(data => {
-            container.innerHTML = ''; 
-            
-            data.forEach(post => {
-                const postElement = document.createElement('div');
-                postElement.className = 'post-item';
-                postElement.innerHTML = `
-                    <h4>${post.judul} (ID: ${post.id})</h4>
-                    <p class='post-konten'>${post.konten}</p>
-                    <button onclick="hapusPostingan(${post.id})">Hapus</button>
-                    <button onclick="isiFormEdit(${post.id})">Edit</button> 
-                    <hr>
-                `;
-                container.appendChild(postElement);
-            });
-        })
-        .catch(error => {
-            console.error('Error saat memuat postingan:', error);
-            container.innerHTML = `<p style="color:red;">Gagal memuat data dari server Render.</p>`;
-        });
-}
-
-// ------------------------------------------------------------------
-// --- FUNGSI DELETE (D) ---
-// ------------------------------------------------------------------
-function hapusPostingan(id) {
-    if (!confirm(`Yakin ingin menghapus Postingan ID ${id}?`)) return;
-
-    fetch(`${BASE_URL}/${id}`, { // Menggunakan URL Publik Render
-        method: 'DELETE', 
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert(data.pesan);
-        muatPostingan();
-    })
-    .catch(error => {
-        alert("Gagal menghapus postingan.");
-        console.error('Error delete:', error);
-    });
-}
-
-// ------------------------------------------------------------------
-// --- FUNGSI UPDATE (Mengisi Formulir Saat Tombol Edit Diklik) ---
-// ------------------------------------------------------------------
-function isiFormEdit(id) {
-    // Cari elemen postingan terdekat berdasarkan tombol yang diklik
-    const postElement = event.target.closest('.post-item');
-    
-    // Ambil Judul dan Konten dari elemen yang sudah tampil di halaman
-    const judul = postElement.querySelector('h4').textContent.split('(')[0].trim();
-    const konten = postElement.querySelector('.post-konten').textContent;
-
-    // Isi formulir dengan data yang diambil
-    document.getElementById('judul').value = judul;
-    document.getElementById('konten').value = konten;
-    
-    // Atur mode ke Update
-    idPostToEdit = id; 
-    feedback.textContent = `MODE EDIT: Mengubah Postingan ID ${id}`;
-    feedback.style.color = 'orange';
-
-    // Scroll ke atas agar formulir terlihat
-    window.scrollTo(0, 0); 
-}
-
-// Jalankan fungsi ini saat halaman dimuat (untuk menampilkan semua data)
-muatPostingan();
+    // Kirim pesan ke server dengan Event: 'message_kirim'
+    socket.emit('message_kirim', { text: text }); 
+    inputPesan.value = ''; // Kosongkan input
+};

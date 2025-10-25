@@ -1,23 +1,31 @@
-// static/script.js (Kode Live Chat Client)
+// static/script.js (Final Fix Socket.IO Client)
 
-// 1. Inisialisasi koneksi Socket.IO ke server Render
-const socket = io('https://fullstack-crud-app-bpsjionrender.com'); // Ganti dengan URL Render-mu!
+const socket = io('https://fullstack-crud-app-bpsjionrender.com', {
+    transports: ['websocket', 'polling'] // Tambahkan ini untuk kestabilan koneksi
+}); 
 
-// Dapatkan elemen
 const inputPesan = document.getElementById('input-pesan');
 const tombolKirim = document.getElementById('tombol-kirim');
 const containerPesan = document.getElementById('container-pesan');
 
-// 2. Event Listener: Server Berhasil Terhubung
+// 1. Event Listener: Server Berhasil Terhubung
 socket.on('connect', function() {
     console.log('Terhubung ke server real-time!');
-    containerPesan.innerHTML += '<p>— Anda terhubung —</p>';
+    // Tunjukkan koneksi sukses di UI
+    containerPesan.innerHTML += '<p style="color:green;">— Anda terhubung —</p>';
 });
 
-// 3. Event Listener: Server Menerima Pesan (Event: 'message_terima')
+// 2. Event Listener: Server Gagal Terhubung
+socket.on('connect_error', (error) => {
+    console.error('Gagal terhubung:', error);
+    containerPesan.innerHTML += '<p style="color:red;">— GAGAL terhubung ke server! —</p>';
+});
+
+// 3. Event Listener: Server Menerima Pesan
 socket.on('message_terima', function(msg) {
-    // Tampilkan pesan yang diterima tanpa reload
     containerPesan.innerHTML += `<p><strong>User:</strong> ${msg.text}</p>`;
+    // Scroll ke bawah
+    containerPesan.scrollTop = containerPesan.scrollHeight;
 });
 
 // 4. Event Handler: Tombol Kirim Diklik
@@ -25,7 +33,7 @@ tombolKirim.onclick = function() {
     const text = inputPesan.value;
     if (text.trim() === '') return;
 
-    // Kirim pesan ke server dengan Event: 'message_kirim'
+    // Kirim pesan ke server
     socket.emit('message_kirim', { text: text }); 
     inputPesan.value = ''; // Kosongkan input
 };

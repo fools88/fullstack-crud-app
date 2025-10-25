@@ -1,17 +1,17 @@
 import eventlet # WAJIB: Di baris pertama untuk Eventlet/WebSocket
 eventlet.monkey_patch() # WAJIB: Di baris kedua untuk Eventlet/WebSocket
 
-from flask import Flask, render_template # Render HTML
+from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
-import os # WAJIB: Untuk mengakses SECRET_KEY
+import os # Untuk mengakses SECRET_KEY
 
 app = Flask(__name__)
-# SocketIO mengurus CORS untuk real-time
-socketio = SocketIO(app, cors_allowed_origins="*")
+# SocketIO mengurus CORS dan menginisialisasi Eventlet
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet') 
 
 # Konfigurasi SECRET_KEY
-# (Meski ini aplikasi chat sederhana, SECRET_KEY wajib untuk Flask)
+# (Meski ini aplikasi chat, SECRET_KEY wajib untuk Flask)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') 
 
 
@@ -37,6 +37,6 @@ def test_connect():
 
 # --- RUN SERVER ---
 if __name__ == '__main__':
-    # Gunakan socketio.run untuk menjalankan server SocketIO/Eventlet
-    # Ini diperlukan untuk lingkungan lokal (local development)
+    # Digunakan untuk lingkungan lokal
+    # Di Render, ini akan diabaikan karena menggunakan Gunicorn
     socketio.run(app, debug=True)

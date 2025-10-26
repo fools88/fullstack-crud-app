@@ -36,7 +36,6 @@ def test_connect():
     print('Klien baru terhubung!')
 
 # --- RUN SERVER ---
-if __name__ == '__main__':
-    # Digunakan untuk lingkungan lokal
+if __name__ == '__main__':    # Digunakan untuk lingkungan lokal
     # Di Render, ini akan diabaikan karena menggunakan Gunicorn
     socketio.run(app, debug=True)

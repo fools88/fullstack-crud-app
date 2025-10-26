@@ -20,8 +20,13 @@ def home():
 # ===== Event Socket.IO =====
 @socketio.on('message_kirim')
 def handle_message(data):
-    print('Pesan diterima:', data)
-    emit('message_terima', data, broadcast=True)
+    # Tambahin user info supaya frontend bisa bedain
+    msg_data = {
+        'text': data['text'],
+        'user': 'server'  # semua broadcast dari server
+    }
+    print('Pesan diterima:', msg_data)
+    emit('message_terima', msg_data, broadcast=True)
 
 @socketio.on('connect')
 def handle_connect():

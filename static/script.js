@@ -1,4 +1,4 @@
-const socket = io("https://YOUR_RENDER_URL", {transports: ['polling','websocket']});
+const socket = io("https://fullstack-crud-app-bpsj.onrender.com", {transports: ['polling','websocket']});
 
 const inputPesan = document.getElementById('input-pesan');
 const tombolKirim = document.getElementById('tombol-kirim');

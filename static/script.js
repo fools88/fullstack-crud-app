@@ -1,31 +1,43 @@
-const socket = io("https://fullstack-crud-app-bpsj.onrender.com", {transports: ['polling','websocket']});
+const RENDER_URL = "https://YOUR_RENDER_URL";  
+
+const socket = io(RENDER_URL, {
+    transports: ['polling','websocket']
+});
 
 const inputPesan = document.getElementById('input-pesan');
 const tombolKirim = document.getElementById('tombol-kirim');
 const containerPesan = document.getElementById('container-pesan');
 
-let username = prompt("Masukkan nama Anda:") || "Anon";
-
-function tambahPesan(teks, sender) {
-    const p = document.createElement('p');
-    p.textContent = teks;
-    p.className = sender === username ? 'user' : 'server';
-    containerPesan.appendChild(p);
-    containerPesan.scrollTop = containerPesan.scrollHeight;
-}
-
-// Terima pesan dari server
-socket.on('message_terima', function(msg){
-    tambahPesan(`${msg.user}: ${msg.text}`, msg.user);
+socket.on('connect', function() {
+    console.log('Terhubung ke server real-time!');
+    containerPesan.innerHTML += '<p style="color:green;">— Anda terhubung —</p>';
 });
 
-// Kirim pesan
+socket.on('connect_error', (error) => {
+    console.error('Gagal terhubung:', error);
+    containerPesan.innerHTML += '<p style="color:red;">— GAGAL terhubung ke server —</p>';
+});
+
+socket.on('message_terima', function(msg) {
+    const kelas = msg.user === 'me' ? 'user' : 'server';
+    containerPesan.innerHTML += `<p class="${kelas}">${msg.text}</p>`;
+    containerPesan.scrollTop = containerPesan.scrollHeight;
+});
+
 function kirimPesan() {
     const text = inputPesan.value.trim();
-    if (!text) return;
-    socket.emit('message_kirim', {user: username, text});
+    if(text === '') return;
+
+    socket.emit('message_kirim', { text: text });
+
+    containerPesan.innerHTML += `<p class="user">${text}</p>`;
+    containerPesan.scrollTop = containerPesan.scrollHeight;
+
     inputPesan.value = '';
 }
 
-tombolKirim.addEventListener('click', kirimPesan);
-inputPesan.addEventListener('keypress', e => { if(e.key === 'Enter') kirimPesan(); });
+tombolKirim.onclick = kirimPesan;
+
+inputPesan.addEventListener('keypress', function(e) {
+    if(e.key === 'Enter') kirimPesan();
+});

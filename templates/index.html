@@ -4,27 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Chat G!</title>
-    <!-- CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-
     <h1>Live Chat G!</h1>
 
-    <!-- Container pesan -->
     <div id="container-pesan">
         <p>Selamat datang di Chat Real-Time Anda!</p>
     </div>
 
-    <!-- Input & tombol kirim -->
-    <div id="input-container">
+    <div id="input-area">
         <input type="text" id="input-pesan" placeholder="Ketik pesan di sini...">
         <button id="tombol-kirim">Kirim</button>
     </div>
 
-    <!-- Socket.IO CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
-    <!-- Script JS -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>

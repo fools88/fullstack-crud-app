@@ -1,12 +1,29 @@
-<h1>Live Chat G!</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Chat G!</title>
+    <!-- Menautkan CSS melalui Flask static folder -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> 
+</head>
+<body>
+    
+    <h1>Live Chat G!</h1>
 
-<div id="container-pesan" style="border: 1px solid black; height: 300px; overflow-y: scroll;">
+    <div id="container-pesan" style="border: 1px solid black; height: 300px; padding: 10px; overflow-y: scroll;">
+        <!-- Pesan akan muncul di sini -->
+        <p>Selamat datang di Chat Real-Time Anda!</p>
     </div>
 
-<input type="text" id="input-pesan" placeholder="Ketik pesan di sini...">
-<button id="tombol-kirim">Kirim</button>
+    <div style="margin-top: 10px;">
+        <input type="text" id="input-pesan" placeholder="Ketik pesan di sini..." style="width: 70%; padding: 8px;">
+        <button id="tombol-kirim" style="padding: 8px 15px;">Kirim</button>
+    </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
-<script src="{{ url_for('static', filename='script.js') }}"></script>
+    <!-- Menautkan Socket.IO library (dari CDN) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
+    <!-- Menautkan JavaScript kita melalui Flask static folder -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

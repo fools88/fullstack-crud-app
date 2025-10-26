@@ -8,8 +8,7 @@ import os # Untuk mengakses SECRET_KEY
 
 app = Flask(__name__)
 # SocketIO mengurus CORS dan menginisialisasi Eventlet
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet') 
-
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 # Konfigurasi SECRET_KEY
 # (Meski ini aplikasi chat, SECRET_KEY wajib untuk Flask)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') 

@@ -1,42 +1,56 @@
-import eventlet # WAJIB 1: Untuk mendukung WebSockets
-eventlet.monkey_patch() # WAJIB 2: Patching untuk SocketIO
+import eventlet
+eventlet.monkey_patch()
 
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_socketio import SocketIO, emit
-from flask_cors import CORS
 import os
+import sqlite3
 
 app = Flask(__name__)
-# SocketIO mengurus CORS dan menggunakan Eventlet
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet') 
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'secret_default')
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 
-# Konfigurasi SECRET_KEY
-# (Meski ini aplikasi chat, SECRET_KEY wajib untuk Flask)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') 
+# --- Database sederhana ---
+def simpan_pesan(user, pesan):
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+    c.execute("CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY, user TEXT, pesan TEXT)")
+    c.execute("INSERT INTO messages (user, pesan) VALUES (?, ?)", (user, pesan))
+    conn.commit()
+    conn.close()
 
+def ambil_semua_pesan():
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+    c.execute("CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY, user TEXT, pesan TEXT)")
+    c.execute("SELECT user, pesan FROM messages ORDER BY id ASC")
+    pesan = c.fetchall()
+    conn.close()
+    return pesan
 
-# --- RUTE HTTP UTAMA (Menyajikan Website) ---
+# --- Routes ---
 @app.route('/')
 def home():
-    # Menyajikan file index.html dari folder 'templates'
-    return render_template('index.html') 
+    return render_template('index.html')
 
-# --- EVENT LISTENERS SOCKETIO (Real-Time) ---
-
+# --- SocketIO Events ---
 @socketio.on('message_kirim')
 def handle_message(data):
-    # Dijalankan ketika klien mengirim event 'message_kirim'
-    print('Pesan diterima: ' + str(data))
-    # Mengirim pesan balik ke SEMUA klien yang terhubung (broadcast)
-    emit('message_terima', data, broadcast=True)
+    user = data.get('user', 'Anon')
+    pesan = data.get('text', '')
+    simpan_pesan(user, pesan)
+    emit('message_terima', {'user': user, 'text': pesan}, broadcast=True)
 
 @socketio.on('connect')
-def test_connect():
-    # Dijalankan ketika klien baru berhasil membuka koneksi WebSocket
-    print('Klien baru terhubung!')
+def on_connect():
+    print("User connected")
+    # Kirim semua pesan sebelumnya ke user baru
+    for u, p in ambil_semua_pesan():
+        emit('message_terima', {'user': u, 'text': p})
 
-# --- RUN SERVER ---
-if __name__ == '__main__':
-    # Digunakan untuk lingkungan lokal
-    # Di Render, ini akan diabaikan karena menggunakan Gunicorn
-    socketio.run(app, debug=True)
+@socketio.on('disconnect')
+def on_disconnect():
+    print("User disconnected")
+
+if __name__ == "__main__":
+    socketio.run(app, host='0.0.0.0', port=5000, debug=True)

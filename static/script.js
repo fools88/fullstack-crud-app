@@ -1,44 +1,31 @@
-// Final Live Chat JavaScript (Socket.IO Client)
-
-// GANTI DENGAN URL PUBLIK RENDER-MU (Sangat penting!)
-const RENDER_URL = 'https://fullstack-crud-app-bpsjionrender.com'; 
-
-// Koneksi Socket.IO ke server Render
-// Memaksa protokol polling dulu untuk mengatasi masalah koneksi Render
-const socket = io(RENDER_URL, {
-    transports: ['polling', 'websocket'] 
-}); 
+const socket = io("https://YOUR_RENDER_URL", {transports: ['polling','websocket']});
 
 const inputPesan = document.getElementById('input-pesan');
 const tombolKirim = document.getElementById('tombol-kirim');
 const containerPesan = document.getElementById('container-pesan');
 
+let username = prompt("Masukkan nama Anda:") || "Anon";
 
-// 1. Event Listener: Server Berhasil Terhubung
-socket.on('connect', function() {
-    console.log('Terhubung ke server real-time!');
-    containerPesan.innerHTML += '<p style="color:green;">— Anda terhubung —</p>';
+function tambahPesan(teks, sender) {
+    const p = document.createElement('p');
+    p.textContent = teks;
+    p.className = sender === username ? 'user' : 'server';
+    containerPesan.appendChild(p);
+    containerPesan.scrollTop = containerPesan.scrollHeight;
+}
+
+// Terima pesan dari server
+socket.on('message_terima', function(msg){
+    tambahPesan(`${msg.user}: ${msg.text}`, msg.user);
 });
 
-// 2. Event Listener: Server Gagal Terhubung
-socket.on('connect_error', (error) => {
-    console.error('Gagal terhubung:', error);
-    containerPesan.innerHTML += '<p style="color:red;">— GAGAL terhubung ke server! (Cek log Render) —</p>';
-});
+// Kirim pesan
+function kirimPesan() {
+    const text = inputPesan.value.trim();
+    if (!text) return;
+    socket.emit('message_kirim', {user: username, text});
+    inputPesan.value = '';
+}
 
-// 3. Event Listener: Server Menerima Pesan
-socket.on('message_terima', function(msg) {
-    containerPesan.innerHTML += `<p><strong>User:</strong> ${msg.text}</p>`;
-    // Scroll ke bawah agar pesan terbaru terlihat
-    containerPesan.scrollTop = containerPesan.scrollHeight; 
-});
-
-// 4. Event Handler: Tombol Kirim Diklik
-tombolKirim.onclick = function() {
-    const text = inputPesan.value;
-    if (text.trim() === '') return;
-
-    // Kirim pesan ke server dengan Event: 'message_kirim'
-    socket.emit('message_kirim', { text: text }); 
-    inputPesan.value = ''; // Kosongkan input
-};
+tombolKirim.addEventListener('click', kirimPesan);
+inputPesan.addEventListener('keypress', e => { if(e.key === 'Enter') kirimPesan(); });

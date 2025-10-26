@@ -1,33 +1,121 @@
-/* Styling Dasar untuk Live Chat */
+/* ===========================
+   Reset & Basic Styling
+   =========================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 body {
     font-family: Arial, sans-serif;
-    margin: 20px;
     background-color: #f4f4f4;
+    padding: 20px;
 }
+
 h1 {
     color: #333;
+    margin-bottom: 15px;
 }
+
+/* ===========================
+   Container Pesan
+   =========================== */
 #container-pesan {
     background-color: #fff;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    height: 400px;           /* tinggi tetap */
+    overflow-y: auto;        /* scroll vertical */
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
+
+/* ===========================
+   Setiap Pesan
+   =========================== */
 p {
-    margin: 5px 0;
+    line-height: 1.4;
+    word-wrap: break-word;
+    max-width: 80%;
+    padding: 5px 10px;
+    border-radius: 15px;
 }
-```
-eof
 
----
+/* Pesan user sendiri */
+p.user {
+    align-self: flex-end;
+    background-color: #007bff;
+    color: #fff;
+}
 
-## Langkah Terakhir: Final Push dan Deploy
+/* Pesan dari orang lain */
+p.server {
+    align-self: flex-start;
+    background-color: #e4e6eb;
+    color: #333;
+}
 
-**G!** Karena semua kode sudah kamu perbaiki dan disajikan dalam struktur folder yang benar (`templates/index.html` dan `static/script.js/style.css`), kita akan melakukan *push* terakhir yang akan membuat *Live Chat* kamu berfungsi.
+/* ===========================
+   Input Container
+   =========================== */
+#input-container {
+    display: flex;
+    gap: 10px;
+}
 
-1.  **Commit dan Push:**
+#input-pesan {
+    flex: 1;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
 
-    ```bash
-    git add .
-    git commit -m "fix: final check for socketio logic and stable transport"
-    git push -u origin main
-    
+#tombol-kirim {
+    padding: 8px 15px;
+    font-size: 14px;
+    border: none;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+}
+
+#tombol-kirim:hover {
+    background-color: #0056b3;
+}
+
+/* ===========================
+   Scrollbar Styling
+   =========================== */
+#container-pesan::-webkit-scrollbar {
+    width: 8px;
+}
+
+#container-pesan::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 4px;
+}
+
+/* ===========================
+   Responsive Mobile
+   =========================== */
+@media screen and (max-width: 600px) {
+    #container-pesan {
+        height: 300px;
+    }
+
+    #input-pesan {
+        font-size: 13px;
+    }
+
+    #tombol-kirim {
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+}
